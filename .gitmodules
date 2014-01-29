@@ -1,0 +1,3 @@
+[submodule "parse-ios-sdk"]
+	path = parse-ios-sdk
+	url = git@booktrope.beanstalkapp.com:/booktrope/parse-ios-sdk.git
