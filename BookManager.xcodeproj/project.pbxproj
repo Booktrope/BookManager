@@ -158,9 +158,9 @@
 				D02A5130189987A700611863 /* Main.storyboard */,
 				D02A5133189987A700611863 /* PriceChangeQueueTableViewController.h */,
 				D02A5134189987A700611863 /* PriceChangeQueueTableViewController.m */,
-				D02A5136189987A700611863 /* Images.xcassets */,
 				D02A5165189991FE00611863 /* PriceChangeQueueCell.h */,
 				D02A5166189991FE00611863 /* PriceChangeQueueCell.m */,
+				D02A5136189987A700611863 /* Images.xcassets */,
 				D02A5125189987A700611863 /* Supporting Files */,
 			);
 			path = BookManager;

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface PriceChangeQueueCell : UITableViewCell
+//assigned and invoked by it's UITableViewController the completion block sets the bookCover
 @property (strong, nonatomic) NSURLSessionDataTask *imageDownloadTask;
 @property (strong, nonatomic) IBOutlet UIImageView *bookCover;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
