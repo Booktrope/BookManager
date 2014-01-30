@@ -121,8 +121,10 @@
             break;
         case 50:
             result = @"Set But Unconfirmed";
+            break;
         case 99:
             result = @"Confirmed";
+            break;
         default:
             break;
     }
@@ -212,8 +214,26 @@
     }
     
     self.priceChangeQueue = sectionedQueueArray;
+    [self.refreshControl endRefreshing];
     [self.tableView reloadData];
 }
+
+- (void)findDataFromParse
+{
+    //Querying the PriceChangeQueue from parse.com
+    PFQuery *query = [PFQuery queryWithClassName:@"PriceChangeQueue"];
+    query.limit = 1000; //TODO: support more than 1000 books/paging etc.
+    [query includeKey:@"book"];
+    [query orderByAscending:@"status,changeDate"]; //sorting based on status and changeDate
+    
+    //running the query in the background
+    [query findObjectsInBackgroundWithBlock:^(NSArray *queue, NSError *error)
+     {
+         //TODO: Might be able to run a block on dispatch_get_main_queue instead of calling handleQueue
+         [self handleQueue:queue];
+     }];
+}
+
 
 - (void)viewDidLoad
 {
@@ -224,18 +244,12 @@
     self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration];
     
-    //Querying the PriceChangeQueue from parse.com
-    PFQuery *query = [PFQuery queryWithClassName:@"PriceChangeQueue"];
-    query.limit = 1000; //TODO: support more than 1000 books/paging etc.
-    [query includeKey:@"book"];
-    [query orderByAscending:@"status,changeDate"]; //sorting based on status and changeDate
+    UIRefreshControl *refresher = [[UIRefreshControl alloc] init];
+    refresher.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
+    [refresher addTarget:self action:@selector(findDataFromParse) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refresher;
     
-    //running the query in the background
-    [query findObjectsInBackgroundWithBlock:^(NSArray *queue, NSError *error)
-    {
-        //TODO: Might be able to run a block on dispatch_get_main_queue instead of calling handleQueue
-        [self handleQueue:queue];
-    }];
+    [self findDataFromParse];
 }
 
 - (void)didReceiveMemoryWarning
