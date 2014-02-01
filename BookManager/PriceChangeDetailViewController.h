@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Parse/Parse.h>
 
-@interface PriceChangeDetailViewController : UIViewController
+@interface PriceChangeDetailViewController : UIViewController <UIActivityItemSource>
 
 @property (nonatomic, retain) NSURLSessionDataTask *dataTask;
 @property (nonatomic, weak) IBOutlet UIImageView *coverImage;
