@@ -162,16 +162,16 @@
     switch (status)
     {
         case 0:
-            result = @"Scheduled";
+            result = @"\tScheduled";
             break;
         case 25:
-            result = @"Attempted";
+            result = @"\tAttempted";
             break;
         case 50:
-            result = @"Set But Unconfirmed";
+            result = @"\tSet But Unconfirmed";
             break;
         case 99:
-            result = @"Confirmed";
+            result = @"\tConfirmed";
             break;
         default:
             break;

@@ -17,12 +17,27 @@
     {
         subject = [NSString stringWithFormat:@"Price Change For %@", self.priceChangeInfo[@"book"][@"title"]];
     }
-    else
-    {
-        //TODO: add support for more Activity Types
-        ;
-    }
     return subject;
+}
+
+- (NSString *)formatBook:(PFObject *)book atTimeStamp:(NSString *)timeStamp forActivity:(NSString *) activity
+{
+    NSString *item;
+    NSString *formatter = @"will be $%.2f starting %@ for a limited time! http://amzn.com/%@";
+    item = [NSString stringWithFormat:formatter, [self.priceChangeInfo[@"price"] doubleValue], timeStamp, book[@"asin"]];
+    const NSInteger MaxTwitterLength = 140;
+    const NSInteger EllipsesLength = 4; //3 dots plus 1 space
+    
+    NSString *title = book[@"title"];
+
+    NSInteger leftOver;
+    if ([activity isEqualToString:UIActivityTypePostToTwitter] && ([title length] + [item length] > MaxTwitterLength))
+    {
+        leftOver = MaxTwitterLength - EllipsesLength - [title length];
+        title = [NSString stringWithFormat: @"%@...", [title substringToIndex:leftOver]];
+    }
+    item = [NSString stringWithFormat:@"%@ %@", title, item];
+    return item;
 }
 
 -(id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(NSString *)activityType
@@ -30,23 +45,12 @@
     NSString *item;
     PFObject *book = self.priceChangeInfo[@"book"];
     NSString *timeStamp = [self convertPSTBackToUTC:(NSDate *)self.priceChangeInfo[@"changeDate"]];
-    if ([activityType isEqualToString:UIActivityTypePostToTwitter])
+    if ([activityType isEqualToString:UIActivityTypePostToTwitter] || [activityType isEqualToString:UIActivityTypePostToFacebook]
+        || [activityType isEqualToString:UIActivityTypeCopyToPasteboard] || [activityType isEqualToString:UIActivityTypeAirDrop])
     {
-        NSString *formatter = @"will be $%.2f starting %@ for a limited time! http://amzn.com/%@";
-        item = [NSString stringWithFormat:formatter, [self.priceChangeInfo[@"price"] doubleValue], timeStamp, book[@"asin"]];
-        const NSInteger MaxTwitterLength = 140;
-        const NSInteger EllipsesLength = 4; //3 dots plus 1 space
-        
-        NSString *title = book[@"title"];
-        NSInteger leftOver;
-        if ([title length] + [item length] > MaxTwitterLength)
-        {
-            leftOver = MaxTwitterLength - EllipsesLength - [title length];
-            title = [NSString stringWithFormat: @"%@... ", [title substringToIndex:leftOver]];
-        }
-        item = [NSString stringWithFormat:@"%@%@", title, item];
+        item = [self formatBook:book atTimeStamp:timeStamp forActivity:activityType];
     }
-    else if([activityType isEqualToString:UIActivityTypeMail])
+    else if([activityType isEqualToString:UIActivityTypeMail] || [activityType isEqualToString:UIActivityTypeMessage] )
     {
         NSString *formatter = @"Price Change\n\nTitle:%@\nAuthor: %@\nPrice: %.2f\nDate: %@\nASIN: %@\nParse Object Id: %@";
         item = [NSString stringWithFormat:formatter, book[@"title"], book[@"author"], [self.priceChangeInfo[@"price"] doubleValue], timeStamp, book[@"asin"], self.priceChangeInfo.objectId];
