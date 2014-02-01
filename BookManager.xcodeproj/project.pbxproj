@@ -30,6 +30,7 @@
 		D02A51601899888E00611863 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02A515F1899888E00611863 /* SystemConfiguration.framework */; };
 		D02A51621899889600611863 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D02A51611899889600611863 /* CFNetwork.framework */; };
 		D02A5167189991FF00611863 /* PriceChangeQueueCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D02A5166189991FE00611863 /* PriceChangeQueueCell.m */; };
+		D0962B70189C45A500FD7B06 /* PriceChangeDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0962B6F189C45A500FD7B06 /* PriceChangeDetailViewController.m */; };
 		D0C856441899B872005F8B7C /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0C856431899B872005F8B7C /* Parse.framework */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +75,8 @@
 		D02A5163189988A400611863 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		D02A5165189991FE00611863 /* PriceChangeQueueCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriceChangeQueueCell.h; sourceTree = "<group>"; };
 		D02A5166189991FE00611863 /* PriceChangeQueueCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriceChangeQueueCell.m; sourceTree = "<group>"; };
+		D0962B6E189C45A500FD7B06 /* PriceChangeDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PriceChangeDetailViewController.h; sourceTree = "<group>"; };
+		D0962B6F189C45A500FD7B06 /* PriceChangeDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PriceChangeDetailViewController.m; sourceTree = "<group>"; };
 		D0C856431899B872005F8B7C /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = "parse-ios-sdk/Parse.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -156,6 +159,8 @@
 				D02A512D189987A700611863 /* AppDelegate.h */,
 				D02A512E189987A700611863 /* AppDelegate.m */,
 				D02A5130189987A700611863 /* Main.storyboard */,
+				D0962B6E189C45A500FD7B06 /* PriceChangeDetailViewController.h */,
+				D0962B6F189C45A500FD7B06 /* PriceChangeDetailViewController.m */,
 				D02A5133189987A700611863 /* PriceChangeQueueTableViewController.h */,
 				D02A5134189987A700611863 /* PriceChangeQueueTableViewController.m */,
 				D02A5165189991FE00611863 /* PriceChangeQueueCell.h */,
@@ -293,6 +298,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D02A5135189987A700611863 /* PriceChangeQueueTableViewController.m in Sources */,
+				D0962B70189C45A500FD7B06 /* PriceChangeDetailViewController.m in Sources */,
 				D02A512F189987A700611863 /* AppDelegate.m in Sources */,
 				D02A512B189987A700611863 /* main.m in Sources */,
 				D02A5167189991FF00611863 /* PriceChangeQueueCell.m in Sources */,

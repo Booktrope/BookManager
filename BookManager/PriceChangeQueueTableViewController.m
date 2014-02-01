@@ -9,6 +9,7 @@
 #import "PriceChangeQueueTableViewController.h"
 #import <Parse/Parse.h>
 #import "PriceChangeQueueCell.h"
+#import "PriceChangeDetailViewController.h"
 
 @interface PriceChangeQueueTableViewController ()
 @property (nonatomic,retain) NSMutableArray *priceChangeQueue;
@@ -73,6 +74,53 @@
 {
     return [[[self.priceChangeQueue objectAtIndex:section] objectForKey:@"data" ] count];
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PriceChangeDetailViewController *priceChangeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"BookDetailView"];
+    
+    NSDictionary *sectionDictionary = [self.priceChangeQueue objectAtIndex:indexPath.section];
+    NSArray *sectionData = [sectionDictionary objectForKey:@"data"];
+    PFObject *priceChangeInfo = [sectionData objectAtIndex:indexPath.row];
+    PFObject *book = (PFObject *)priceChangeInfo[@"book"];
+    
+    priceChangeViewController.priceChangeInfo = priceChangeInfo;
+
+    NSURL *url = [NSURL URLWithString:book[@"large_image"]];
+    priceChangeViewController.dataTask = [self.session dataTaskWithURL:url completionHandler:
+    ^(NSData *data, NSURLResponse *response, NSError *error)
+    {
+        if(error)
+        {
+            NSLog(@"ERROR: %@", error);
+        }
+        else
+        {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            if (httpResponse.statusCode == 200)
+            {
+                UIImage *image = [UIImage imageWithData:data];
+                dispatch_async(dispatch_get_main_queue(), ^{priceChangeViewController.coverImage.image = image;});
+            }
+            else
+            {
+                NSLog(@"HTTP %ld",(long)httpResponse.statusCode);
+            }
+        }
+    }];
+    [priceChangeViewController.dataTask resume];
+    
+    [self.navigationController pushViewController:priceChangeViewController animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
+        [priceChangeViewController.authorLabel setText:book[@"author"]];
+        [priceChangeViewController.asinLabel setText:book[@"asin"]];
+
+    });
+    
+}
+
+
 
 
 #pragma HELPER FUNCTIONS
@@ -147,8 +195,14 @@
     [cell.priceLabel setText:[item[@"price"] stringValue]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+    NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+    [dateFormatter setTimeZone:gmt];
+    
     NSDate *changeDate = item[@"changeDate"];
-    [cell.dateLabel setText:[dateFormatter stringFromDate:changeDate]];
+    
+    NSString *timeStamp = [dateFormatter stringFromDate:changeDate];
+    
+    [cell.dateLabel setText:timeStamp];
     
     if (cell.imageDownloadTask)
     {
@@ -234,6 +288,12 @@
      }];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:NO];
+
+}
 
 - (void)viewDidLoad
 {
@@ -243,6 +303,7 @@
     //Setting up the NSURLSession which is used to download the book images from amazon.
     self.sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration];
+    
     
     UIRefreshControl *refresher = [[UIRefreshControl alloc] init];
     refresher.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
