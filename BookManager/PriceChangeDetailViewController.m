@@ -44,7 +44,7 @@
 {
     NSString *item;
     PFObject *book = self.priceChangeInfo[@"book"];
-    NSString *timeStamp = [self convertPSTBackToUTC:(NSDate *)self.priceChangeInfo[@"changeDate"]];
+    NSString *timeStamp = [self formatDateForDisplay:(NSDate *)self.priceChangeInfo[@"changeDate"]];
     if ([activityType isEqualToString:UIActivityTypePostToTwitter] || [activityType isEqualToString:UIActivityTypePostToFacebook]
         || [activityType isEqualToString:UIActivityTypeCopyToPasteboard] || [activityType isEqualToString:UIActivityTypeAirDrop])
     {
@@ -72,12 +72,10 @@
     [self presentViewController:activityController animated:YES completion:^{}];
 }
 
-- (NSString *)convertPSTBackToUTC:(NSDate *)date
+- (NSString *)formatDateForDisplay:(NSDate *)date
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY/MM/dd"];
-    NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    [dateFormatter setTimeZone:gmt];
     NSString *timeStamp = [dateFormatter stringFromDate:date];
     return timeStamp;
 }
@@ -97,7 +95,7 @@
     
     NSString *formatter = @"%@\n\n%@%@\n%@$%.2f\n%@%@ 12:01 AM (PST)\n";
     
-    NSString *timeStamp = [self convertPSTBackToUTC:(NSDate *)self.priceChangeInfo[@"changeDate"]];
+    NSString *timeStamp = [self formatDateForDisplay:(NSDate *)self.priceChangeInfo[@"changeDate"]];
    
     
     

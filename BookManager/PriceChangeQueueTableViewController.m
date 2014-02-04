@@ -121,8 +121,6 @@
 }
 
 
-
-
 #pragma HELPER FUNCTIONS
 //Overriding the height for the UITableViewCell
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -193,17 +191,13 @@
     [cell.authorLabel setText:book[@"author"]];
     [cell.asinLabel setText:item[@"asin"]];
     [cell.priceLabel setText:[item[@"price"] stringValue]];
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY/MM/dd"];
-    NSTimeZone *gmt = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-    [dateFormatter setTimeZone:gmt];
-    
     NSDate *changeDate = item[@"changeDate"];
-    
     NSString *timeStamp = [dateFormatter stringFromDate:changeDate];
     
     [cell.dateLabel setText:timeStamp];
-    
     if (cell.imageDownloadTask)
     {
         [cell.imageDownloadTask cancel];
