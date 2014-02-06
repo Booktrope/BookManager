@@ -16,7 +16,8 @@
     // Override point for customization after application launch.
     
     //Initializing Parse.
-    [Parse setApplicationId:@"RIaidI3C8TOI7h6e3HwEItxYGs9RLXxhO0xdkdM6" clientKey:@"xKY3pvCGRKEeFGbZxMuVUMhq66ihqrLrdzl6EZVY"];
+    //[Parse setApplicationId:@"RIaidI3C8TOI7h6e3HwEItxYGs9RLXxhO0xdkdM6" clientKey:@"xKY3pvCGRKEeFGbZxMuVUMhq66ihqrLrdzl6EZVY"];
+    [Parse setApplicationId:@"urCidOZA5vUUQ57OUnK7fBjHet3Pj34fjhHKY4Vh" clientKey:@"FIZxWNACwCrQMiYcpVHqeSxeXfGsW9DyYWfm4k3E"];
     
     return YES;
 }
