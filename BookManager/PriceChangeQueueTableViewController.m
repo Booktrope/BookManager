@@ -190,7 +190,7 @@
     [cell.titleLabel setText:book[@"title"]];
     [cell.authorLabel setText:book[@"author"]];
     [cell.asinLabel setText:item[@"asin"]];
-    [cell.priceLabel setText:[item[@"price"] stringValue]];
+    [cell.priceLabel setText:[NSString stringWithFormat:@"$%@", item[@"price"]]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY/MM/dd"];
