@@ -237,6 +237,8 @@
 //Called by the block to process the results from parse.com and convert it into a sectioned table based on status.
 - (void)handleQueue:(NSArray *)queue
 {
+    if ([queue count] <= 0) { return; }
+    
     NSInteger previous_status = -1;
     NSMutableArray *sectionedQueueArray = [[NSMutableArray alloc] init];
     NSMutableDictionary *sectionedQueueDictionary;
@@ -268,17 +270,33 @@
 
 - (void)findDataFromParse
 {
+    
+    //Building the inner query which will only load price changes for the Amazon Channel.
+    PFQuery *innerQuery = [PFQuery queryWithClassName:@"SalesChannel"];
+    [innerQuery whereKey:@"name" equalTo:@"Amazon"];
+    
     //Querying the PriceChangeQueue from parse.com
     PFQuery *query = [PFQuery queryWithClassName:@"PriceChangeQueue"];
     query.limit = 1000; //TODO: support more than 1000 books/paging etc.
     [query includeKey:@"book"];
+    [query includeKey:@"salesChannel"];
     [query orderByAscending:@"status,changeDate"]; //sorting based on status and changeDate
+    
+    
+    [query whereKey:@"salesChannel" matchesQuery:innerQuery];
     
     //running the query in the background
     [query findObjectsInBackgroundWithBlock:^(NSArray *queue, NSError *error)
      {
          //TODO: Might be able to run a block on dispatch_get_main_queue instead of calling handleQueue
-         [self handleQueue:queue];
+         if (!error)
+         {
+             [self handleQueue:queue];
+         }
+         else
+         {
+             NSLog(@"%@",error);
+         }
      }];
 }
 
