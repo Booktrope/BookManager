@@ -75,7 +75,7 @@
 - (NSString *)formatDateForDisplay:(NSDate *)date
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+    [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm:ss"];
     NSString *timeStamp = [dateFormatter stringFromDate:date];
     return timeStamp;
 }
@@ -93,7 +93,7 @@
     NSString *headerDate = @"On or Before: ";
     
     
-    NSString *formatter = @"%@\n\n%@%@\n%@$%.2f\n%@%@ 12:01 AM (PST)\n";
+    NSString *formatter = @"%@\n\n%@%@\n%@$%.2f\n%@%@ (PST)\n";
     
     NSString *timeStamp = [self formatDateForDisplay:(NSDate *)self.priceChangeInfo[@"changeDate"]];
    

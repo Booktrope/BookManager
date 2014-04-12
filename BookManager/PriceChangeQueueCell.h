@@ -14,7 +14,9 @@
 @property (strong, nonatomic) IBOutlet UIImageView *bookCover;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *authorLabel;
-@property (weak, nonatomic) IBOutlet UILabel *asinLabel;
+@property (weak, nonatomic) IBOutlet UILabel *amazonLabel;
+@property (weak, nonatomic) IBOutlet UILabel *appleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *nookLabel;
 @property (weak, nonatomic) IBOutlet UILabel *priceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @end

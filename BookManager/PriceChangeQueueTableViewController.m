@@ -30,6 +30,11 @@
     return [self.priceChangeQueue count];
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [[[self.priceChangeQueue objectAtIndex:section] objectForKey:@"data" ] count];
+}
+
 #pragma UITableViewHeaderFooterView
 - (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section
 {
@@ -69,11 +74,6 @@
 }
 
 #pragma end of UITableViewHeaderFooterView
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[[self.priceChangeQueue objectAtIndex:section] objectForKey:@"data" ] count];
-}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -189,11 +189,16 @@
     PFObject *book = (PFObject *)item[@"book"];
     [cell.titleLabel setText:book[@"title"]];
     [cell.authorLabel setText:book[@"author"]];
-    [cell.asinLabel setText:item[@"asin"]];
+    //[cell.asinLabel setText:item[@"asin"]];
+    
+    [cell.amazonLabel setHidden:(([item[@"channels"] intValue] & 1) == 1) ? NO : YES];
+    [cell.appleLabel  setHidden:(([item[@"channels"] intValue] & 2) == 2) ? NO : YES];
+    [cell.nookLabel   setHidden:(([item[@"channels"] intValue] & 4) == 4) ? NO : YES];
+    
     [cell.priceLabel setText:[NSString stringWithFormat:@"$%@", item[@"price"]]];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY/MM/dd"];
+    [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm"];
     NSDate *changeDate = item[@"changeDate"];
     NSString *timeStamp = [dateFormatter stringFromDate:changeDate];
     
@@ -242,6 +247,7 @@
     NSInteger previous_status = -1;
     NSMutableArray *sectionedQueueArray = [[NSMutableArray alloc] init];
     NSMutableDictionary *sectionedQueueDictionary;
+    NSMutableDictionary *queuedBooks;
     for (PFObject *item in queue)
     {
         if (previous_status != [item[@"status"] integerValue])
@@ -249,12 +255,32 @@
             if (previous_status >= 0)
             {
                 [sectionedQueueArray addObject:sectionedQueueDictionary];
+                
             }
+            queuedBooks = [[NSMutableDictionary alloc] init];
             sectionedQueueDictionary = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                     item[@"status"], @"title",
-                    [[NSMutableArray alloc] init], @"data", nil];
+                    [[NSMutableArray alloc] init], @"data"
+                    , nil];
         }
-        [sectionedQueueDictionary[@"data"] addObject:item];
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"YYYYMMddHH:mm"];
+        NSString *timeStamp = [dateFormatter stringFromDate:item[@"changeDate"]];
+        
+        NSString *key = [NSString stringWithFormat:@"%@_%@", timeStamp,((PFObject*)item[@"book"]).objectId];
+        
+        if ([queuedBooks objectForKey:key] != nil)
+        {
+            PFObject* currentBook = [queuedBooks objectForKey:key];
+            currentBook[@"channels"] = [NSNumber numberWithInt: [currentBook[@"channels"] intValue] | [[self getValueForChannel:item[@"channelName"]] intValue] ];
+        }
+        else
+        {
+            [queuedBooks setObject:item forKey:key];
+            item[@"channels"] = [self getValueForChannel:item[@"channelName"]];
+            [sectionedQueueDictionary[@"data"] addObject:item];
+        }
         
         previous_status = [item[@"status"] integerValue];
     }
@@ -268,12 +294,30 @@
     [self.tableView reloadData];
 }
 
+- (NSNumber *)getValueForChannel:(NSString *) channel
+{
+    int channelValue = 0;
+    if([channel isEqualToString:@"Amazon"])
+    {
+        channelValue = 1;
+    }
+    else if([channel isEqualToString:@"Apple"])
+    {
+        channelValue = 2;
+    }
+    else
+    {
+        channelValue = 4; //Nook
+    }
+    return [NSNumber numberWithInt:channelValue];
+}
+
 - (void)findDataFromParse
 {
     
     //Building the inner query which will only load price changes for the Amazon Channel.
-    PFQuery *innerQuery = [PFQuery queryWithClassName:@"SalesChannel"];
-    [innerQuery whereKey:@"name" equalTo:@"Amazon"];
+    //PFQuery *innerQuery = [PFQuery queryWithClassName:@"SalesChannel"];
+    //[innerQuery whereKey:@"name" equalTo:@"Apple"];
     
     //Querying the PriceChangeQueue from parse.com
     PFQuery *query = [PFQuery queryWithClassName:@"PriceChangeQueue"];
@@ -283,7 +327,7 @@
     [query orderByAscending:@"status,changeDate"]; //sorting based on status and changeDate
     
     
-    [query whereKey:@"salesChannel" matchesQuery:innerQuery];
+    //[query whereKey:@"salesChannel" matchesQuery:innerQuery];
     
     //running the query in the background
     [query findObjectsInBackgroundWithBlock:^(NSArray *queue, NSError *error)
