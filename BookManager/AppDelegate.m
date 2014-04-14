@@ -18,8 +18,24 @@
     //Initializing Parse.
     [Parse setApplicationId:@"RIaidI3C8TOI7h6e3HwEItxYGs9RLXxhO0xdkdM6" clientKey:@"xKY3pvCGRKEeFGbZxMuVUMhq66ihqrLrdzl6EZVY"];
     //[Parse setApplicationId:@"urCidOZA5vUUQ57OUnK7fBjHet3Pj34fjhHKY4Vh" clientKey:@"FIZxWNACwCrQMiYcpVHqeSxeXfGsW9DyYWfm4k3E"];
+    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge |
+                                                    UIRemoteNotificationTypeAlert |
+                                                    UIRemoteNotificationTypeSound ];
     
     return YES;
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation addUniqueObject:@"PriceChanges" forKey:@"channels"];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [PFPush handlePush:userInfo];
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
